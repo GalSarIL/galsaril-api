@@ -2,9 +2,7 @@ pipeline {
     agent any
 
     environment {
-        CLOUDFLARE_API_TOKEN  = credentials('cloudflare-api-token')
-        CLOUDFLARE_ACCOUNT_ID = credentials('cloudflare-account-id')
-        SLACK_WEBHOOK         = credentials('slack-webhook')
+        SLACK_WEBHOOK = credentials('slack-webhook')
     }
 
     triggers {

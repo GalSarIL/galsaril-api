@@ -1,6 +1,7 @@
 name = "galsaril-api"
 main = "src/index.ts"
 compatibility_date = "2025-05-01"
+account_id = "bd6ba2ce028cbe4fa971a70335b715bf"
 
 [vars]
 ALLOWED_ADMIN_ORIGIN = "https://admin.galsaril.com"

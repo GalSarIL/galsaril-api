@@ -1,0 +1,48 @@
+name = "galsaril-api"
+main = "src/index.ts"
+compatibility_date = "2025-05-01"
+
+[vars]
+ALLOWED_ADMIN_ORIGIN = "https://admin.galsaril.com"
+ALLOWED_SITE_ORIGIN  = "https://galsaril.com"
+
+[env.dev.vars]
+ALLOWED_ADMIN_ORIGIN = "http://localhost:8082"
+ALLOWED_SITE_ORIGIN  = "http://localhost:8080"
+
+[[env.dev.d1_databases]]
+binding       = "DB"
+database_name = "galsaril-db"
+database_id   = "f821d184-74ec-40b4-bc0f-5acc8371348d"
+
+[[env.dev.kv_namespaces]]
+binding = "AUTH_KV"
+id      = "3ca677700a5c46b88fb1a263895adba6"
+
+# After creating resources, fill in the IDs:
+#   wrangler d1 create galsaril-db
+#   wrangler kv namespace create AUTH_KV
+# Then run:
+#   npm run setup-password
+# to create the initial admin credentials in KV.
+#
+# Secrets to set (wrangler secret put <NAME>):
+#   JWT_SECRET         — random 64-char string
+#   CF_ANALYTICS_TOKEN — Cloudflare API token with Analytics:Read
+#   CF_ZONE_ID         — Zone ID from Cloudflare dashboard (galsaril.com)
+
+[[d1_databases]]
+binding       = "DB"
+database_name = "galsaril-db"
+database_id   = "f821d184-74ec-40b4-bc0f-5acc8371348d"
+
+[[kv_namespaces]]
+binding = "AUTH_KV"
+id      = "3ca677700a5c46b88fb1a263895adba6"
+
+[triggers]
+crons = ["*/15 * * * *"]
+
+[[routes]]
+pattern = "api.galsaril.com/*"
+zone_name = "galsaril.com"

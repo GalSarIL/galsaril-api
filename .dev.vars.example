@@ -1,0 +1,6 @@
+# Copy to .dev.vars (gitignored) before running: npm run dev
+# These replace wrangler secrets in local dev only.
+
+JWT_SECRET=any-random-64-char-string-for-local-dev-only-not-used-in-prod
+CF_ANALYTICS_TOKEN=not-needed-locally
+CF_ZONE_ID=not-needed-locally

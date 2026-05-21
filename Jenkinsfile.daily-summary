@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+
+    environment {
+        SLACK_WEBHOOK = credentials('slack-webhook')
+    }
+
+    triggers {
+        cron('55 23 * * *')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps { checkout scm }
+        }
+
+        stage('Daily Uptime Summary') {
+            steps {
+                sh '''
+wrangler d1 execute galsaril-db \
+  --command "SELECT COUNT(*) as total, COALESCE(SUM(ok), 0) as passed FROM monitor_log WHERE ts > (unixepoch('now') - 86400) * 1000" \
+  --json > /tmp/mr.json 2>/dev/null || echo "[]" > /tmp/mr.json
+TOTAL=$(node -e "try{const d=require('/tmp/mr.json');console.log(d[0]&&d[0].results&&d[0].results[0]?d[0].results[0].total:0)}catch(e){console.log(0)}")
+PASSED=$(node -e "try{const d=require('/tmp/mr.json');console.log(d[0]&&d[0].results&&d[0].results[0]?d[0].results[0].passed:0)}catch(e){console.log(0)}")
+if [ "$TOTAL" = "0" ]; then
+  MSG=":grey_question: *Daily uptime - galsaril.com* No checks recorded today"
+elif [ "$PASSED" = "$TOTAL" ]; then
+  MSG=":white_check_mark: *Daily uptime - galsaril.com* ${PASSED}/${TOTAL} checks passed"
+else
+  MSG=":warning: *Daily uptime - galsaril.com* ${PASSED}/${TOTAL} checks passed"
+fi
+curl -s -X POST "$SLACK_WEBHOOK" -H "Content-Type: application/json" --data '{"text":"'"$MSG"'"}'
+'''
+            }
+        }
+    }
+}
